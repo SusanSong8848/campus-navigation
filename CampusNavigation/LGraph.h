@@ -14,9 +14,12 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "LocationInfo.h"
 #include "GraphException.h"
 
+//这里我先说一下为什么要在namespace Graph里面写所有的代码和类：因为可以避免命名冲突：如果别人的库也有一个叫 LGraph 的类，我的就叫 __Graph::LGraph__，不会打架。
+//namespace Graph 是 C++ 的命名空间，类似于给代码加一个“姓”
 namespace Graph {
 
     /* 边（道路）信息 —— 纯数据载体，供公共接口返回使用。
@@ -30,31 +33,52 @@ namespace Graph {
 
         EdgeNode() : distance(0), walk_time(0), status("open") {}
         EdgeNode(std::string f, std::string t, int d, int w, std::string s)
-            : from_id(std::move(f)), to_id(std::move(t)),
-              distance(d), walk_time(w), status(std::move(s)) {}
-    };
+            : from_id(std::move(f)), to_id(std::move(t)),       //std::move(),不拷贝数据，而是把资源的所有权从一个对象“转移”到另一个对象。
+              distance(d), walk_time(w), status(std::move(s)) {}        //尤其对于长字符串。from_id 直接接管 f 的内部字符数组，不再额外拷贝。
+    };                                                                  //能移动就移动，别拷贝。
 
     class LGraph {
     private:
         // ==================================================
-        // TODO: 在此处自行设计你的图数据结构
+        // 数据结构设计：邻接表 + 双哈希索引
         // ==================================================
-        // 可考虑的存储方案（不限于）：
-        //   1. 邻接表：vector + list / vector + vector / unordered_map + list ...
-        //   2. 邻接矩阵：二维 vector / 一维 vector 模拟二维
-        //   3. 边表 + 顶点索引：单一 vector<EdgeNode> 配合 id→索引 的 map
-        //   4. 以 place_id 为键的嵌套 hash map（string→string→EdgeNode）
-        //   5. 其它你自创的组合
+        // 
+        // 选择理由：
+        //   1. vertices_: unordered_map<place_id, LocationInfo>
+        //      - 通过 place_id 查找顶点信息 O(1)
+        //      - 存储顶点的完整属性（名称、类别、时间窗等）
         //
-        // 设计时请思考：
-        //   - 如何快速通过 place_id 找到顶点？
-        //   - 如何支持高效的增删边？
-        //   - 删除顶点后，相关资源如何处理（立即回收 / 逻辑删除 / slot 回收）？
-        //   - 无向图中同一条边如何避免重复存储，同时又能快速双向查询？
+        //   2. adj_: unordered_map<from_id, unordered_map<to_id, EdgeNode>>
+        //      - 邻接表：从任一顶点出发，O(1) 定位其邻接边集合
+        //      - 内层 map 允许 O(1) 查找特定边的信息
+        //      - 无向图中每条边存储两次（两个方向），保证双向查询对称
+        //
+        // 替代方案权衡：
+        //   - 邻接矩阵 O(V²)：校园图稀疏（87节点仅26边），空间浪费严重
+        //   - 纯边表 vector<EdgeNode>：查特定边需 O(E) 遍历，Dijkstra 效率低
+        //   - hash邻接表：空间 O(V+E)，增删改查均 O(1)，最适合本项目
+        //
+        // 各操作复杂度：
+        //   exist_vertex / GetVertex: O(1)
+        //   exist_edge / GetEdge: O(1)
+        //   InsertVertex / DeleteVertex: O(1) / O(degree度)（需清理邻接表）
+        //   InsertEdge / DeleteEdge: O(1)（双向各一次）
+        //   遍历 AllEdges / AllPlaceIds: O(E) / O(V)
         // ==================================================
 
+        bool directed_;  // 是否为有向图（本项目默认 false，无向图）
+
+        // 顶点存储：place_id → 顶点完整信息
+        std::unordered_map<std::string, LocationInfo> vertices_;        //vertices是vertex的复数
+
+        // 邻接表：from_id → (to_id → 边信息)
+        // 无向图中每条边在 adj_[u][v] 和 adj_[v][u] 各存一份
+        std::unordered_map<std::string, std::unordered_map<std::string, EdgeNode>> adj_;
+
     public:
-        explicit LGraph(bool directed = false);
+        explicit LGraph(bool directed = false);     /*explicit 防止隐式类型转换：如果不加，可能会出现这种奇怪的代码：
+                                                        LGraph g = true;  // 居然把 bool 悄悄变成了 LGraph(true)
+                                                        对于单参数构造函数，推荐加上 explicit 以避免意外*/
 
         // ==================== 基础信息 ====================
         int VertexCount() const;
