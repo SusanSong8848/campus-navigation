@@ -13,6 +13,7 @@
 
 namespace Graph {
 
+    /*RoadRecord：只是 CSV 读取时的临时载体，读完后立即转换成 EdgeNode 插入图，其他地方完全不需要它，所以放在 CsvIO 内部作为局部实现细节。*/
     // 道路原始数据（从 CSV 读入时使用）
     struct RoadRecord {
         std::string from_id;
@@ -21,6 +22,9 @@ namespace Graph {
         int walk_time;
         std::string status;
     };
+
+//（说明）：CSV = Comma-Separated Values（逗号分隔值）。
+//.csv 是一种纯文本文件格式：每行一条记录，字段之间用逗号分隔，类似简易表格，几乎所有数据处理软件都能读写。
 
     namespace CsvIO {
         // 从 CSV 文件读取地点信息
