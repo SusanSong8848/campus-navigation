@@ -16,7 +16,7 @@ namespace Graph {
 
     class CommandProcessor {
     private:
-        LGraph &graph;
+        LGraph &graph;              //注意这里graph是引用，因为都是操作同一幅图，而且也不用挨个拷贝
 
         // ==================== 命令处理函数 ====================
         void cmdLoad(std::istringstream &args);
