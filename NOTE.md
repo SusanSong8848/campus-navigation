@@ -223,3 +223,248 @@ file.close();
 
 - `ofstream` 对象在离开作用域时，析构函数会自动调用 `close()`
 - 手动 `close()` 不是必须的，但明确写出能让读者知道"这里文件读写结束了"
+
+---
+
+## 三、Algorithm（图算法）
+
+### （一）[Algorithm.h里面](CampusNavigation/Algorithm.h)
+
+#### 1. DSU（并查集）——路径压缩 + 按秩合并
+
+DSU 是 **Disjoint Set Union**（不交集合并）的缩写，用于 Kruskal 最小生成树算法。
+
+**核心操作：**
+- `find(x)`：找 x 的根节点 + **路径压缩**——把沿路所有节点直接挂到根上
+- `unite(x, y)`：合并两个集合 + **按秩合并**——始终把矮树挂到高树下
+- 两个优化合在一起，摊还复杂度 O(α(n)) ≈ O(1)
+
+**rank（秩）**：并不是树的精确高度，而是"近似高度"。只有两棵树秩相等时合并，新树的秩才会 +1。这样保证树不会退化成长链。
+
+#### 2. `enum`（枚举类型）——给整数常量取名字
+
+```cpp
+enum PathMode {
+    DIST,   // 按距离最短  → 值为 0
+    TIME    // 按步行时间最短 → 值为 1
+};
+```
+
+- `enum` 把一组相关的整数常量打包成一个"类型"
+- 代码中用 `PathMode::DIST` / `PathMode::TIME` 代替裸数字 0/1，可读性大幅提高
+- 默认从 0 开始递增，也可以手动指定：`enum { A = 5, B = 10 }`
+
+#### 3. `static` 函数只在当前 .cpp 文件内可见
+
+```cpp
+// Algorithm.cpp 里的两个 static 辅助函数
+static int getWeight(const EdgeNode &edge, PathMode mode);
+static std::vector<int> bfsComponents(...);
+```
+
+- 写在 `.cpp` 文件里的 `static` 函数，**只在当前编译单元（.cpp）内可见**
+- 外部文件（如 `main.cpp`、`CommandProcessor.cpp`）完全看不到它们
+- 作用：把内部实现细节藏起来，避免污染全局命名空间
+- 和 `private` 成员函数类似，但这是文件级的"私有"
+
+### （二）[Algorithm.cpp里面](CampusNavigation/Algorithm.cpp)
+
+#### 1. `<climits>`——整数极限值
+
+```cpp
+#include <climits>  // INT_MAX
+dist[id] = INT_MAX; // 初始距离设为"无穷大"
+```
+
+- `INT_MAX` 是 C++ 中 `int` 类型的最大值（通常为 2147483647）
+- 用于 Dijkstra 初始化：把所有点距离设为"无穷大"，表示尚未到达
+- 松弛条件 `cur_dist + weight < dist[neighbor]` 依赖 INT_MAX 来确保首次到达的任何路径都能更新
+
+#### 2. Lambda 表达式（匿名函数）
+
+```cpp
+auto isEdgeBlocked = [&](const std::string &a, const std::string &b) {
+    std::string key = (a < b) ? (a + "|" + b) : (b + "|" + a);
+    return blocked_edges.count(key) > 0;
+};
+```
+
+**Lambda 语法拆解：**
+- `[&]`：**捕获列表**，`&` 表示以引用方式捕获外部作用域的所有局部变量（如 `blocked_edges`），无需传参也能访问
+- `(const std::string &a, const std::string &b)`：参数列表，和普通函数一样
+- `{ ... }`：函数体
+- `auto` 不能写成 `bool`，因为 lambda 返回的是一个**可调用对象**，不是一个 `bool` 值
+
+**捕获方式的变体：**
+- `[&]`：引用捕获全部（效率高，不拷贝，但要注意生命周期——被捕获的变量不能先于 lambda 销毁）
+- `[=]`：值捕获全部（安全，但会拷贝）
+- `[&x, =y]`：x 引用捕获，y 值捕获
+
+#### 3. `std::priority_queue` 实现小顶堆
+
+```cpp
+using P = std::pair<int, std::string>;
+std::priority_queue<P, std::vector<P>, std::greater<P>> pq;
+```
+
+- `priority_queue` **默认是大顶堆**（最大的在堆顶，等价于 `std::less<P>`）
+- **第三个模板参数**是比较器，传入 `std::greater<P>` 后比较规则反转，变成**小顶堆**（最小的在堆顶）
+- `std::greater<P>` 是一个函数对象，比较 `pair` 时先比 `first`（即距离/时间），再比 `second`
+- 这样 `pq.top()` 始终返回当前 `first` 最小的那个 pair，恰好满足 Dijkstra 需要
+
+**三个模板参数的含义：**
+
+| 参数 | 含义 |
+|------|------|
+| `P` | 存储的元素类型 |
+| `std::vector<P>` | 底层容器（默认就是 vector） |
+| `std::greater<P>` | 比较规则（从小到大出队） |
+
+#### 4. `using` 类型别名——现代版 `typedef`
+
+```cpp
+using P = std::pair<int, std::string>;
+```
+
+- `using P = ...` 给一个长类型起短名，方便后续多次使用
+- 等价于 `typedef std::pair<int, std::string> P`
+- **更推荐 `using`**：语法更直观（`新名字 = 旧类型`），且支持模板别名
+
+#### 5. C++17 结构化绑定（Structured Binding）
+
+```cpp
+auto [cur_dist, cur_id] = pq.top();  // 把 pair 的两个元素解包到两个变量
+```
+
+- 取出 `pq.top()` 返回的 `pair<int, string>`，把 `first` 赋给 `cur_dist`，`second` 赋给 `cur_id`
+- **需要 C++17 标准**（CMakeLists.txt 里设的 `CMAKE_CXX_STANDARD 17`）
+- 比 `auto p = pq.top(); p.first` / `p.second` 写法更清晰
+
+#### 6. `std::greater<int>()`——降序排序
+
+```cpp
+std::sort(sizes.begin(), sizes.end(), std::greater<int>());  // 降序
+std::sort(ids.begin(), ids.end());                            // 默认升序
+```
+
+- `std::sort` 默认是**升序**（从小到大），第三个参数不写就是 `std::less<>`
+- 传入 `std::greater<int>()` 则反转为**降序**（从大到小）
+- `std::greater` 是 `<functional>` 头文件中预定义的函数对象，但很多编译器通过 `<algorithm>` 间接包含
+
+#### 7. Dijkstra 算法的"惰性删除"
+
+```cpp
+// 如果已经确定过最短路径，跳过（惰性删除）
+if (settled.count(cur_id)) continue;
+settled.insert(cur_id);
+```
+
+- 优先队列里可能有**同一个节点的多个不同距离记录**（每次松弛都 push 新记录，不会删旧的）
+- 当某个节点第一次从堆顶弹出时，它的当前距离就是全局最短距离（Dijkstra 的核心性质：所有边权非负）
+- 之后再弹出这个节点时，跳过即可——这就是**惰性删除**（Lazy Deletion）
+
+#### 8. HH:MM 字符串比较的巧妙之处
+
+```cpp
+auto isOpen = [&](const std::string &place_id) {
+    LocationInfo info = graph.GetVertex(place_id);
+    return info.open_time <= time && time <= info.close_time;
+};
+```
+
+- 时间格式 `HH:MM`（如 `"08:00"`、`"22:00"`）中，**字符串字典序恰好等于时间先后的数值序**
+- `"08:00" <= "12:00"` 为 true，`"12:00" <= "22:00"` 也为 true
+- 前提：小时和分钟都必须是**两位数字**，零填充（01, 02, ..., 09）
+
+---
+
+## 四、CommandProcessor
+
+### （一）[CommandProcessor.h里面](CampusNavigation/CommandProcessor.h)
+
+#### 1. 类成员用引用 `LGraph &graph`——避免拷贝
+
+```cpp
+class CommandProcessor {
+private:
+    LGraph &graph;  // 注意这里 graph 是引用，因为都是操作同一幅图
+    // ...
+};
+```
+
+- `graph` 是**引用成员**，指向外部的图对象
+- 不用拷贝：一张图可能有几百个节点，拷贝代价大
+- 确保所有命令操作的都是同一幅图（`main.cpp` 中构造的 `LGraph graph(false)`)
+- **注意**：引用成员必须在构造函数的初始化列表里初始化，不能延迟赋值
+
+#### 2. `istringstream` 作为引用参数传递
+
+```cpp
+void cmdLoad(std::istringstream &args);
+void cmdShortest(std::istringstream &args);
+```
+
+- `args` 是 `ProcessCommand` 中的 `iss` 的引用
+- 因为是**引用传递**，`args` 的读取位置会改变，调用方 `iss` 的剩余内容同步减少
+- 如果用值传递，会拷贝整个流，而且读位置的变化不会影响原流
+
+### （二）[CommandProcessor.cpp里面](CampusNavigation/CommandProcessor.cpp)
+
+#### 1. `try-catch` 异常处理模式——谁调用谁负责
+
+```cpp
+try {
+    graph.InsertVertex(info);
+    std::cout << "OK" << std::endl;
+} catch (const GraphException &e) {
+    std::string what(e.what());
+    if (what.find("place_already_exists") != std::string::npos) {
+        std::cout << "ERROR place_already_exists" << std::endl;
+    } else {
+        std::cout << "ERROR " << what << std::endl;
+    }
+}
+```
+
+- **原则**：谁调用函数谁承担后果——被调用函数抛出异常，调用者必须用 try-catch 处理
+- `e.what()` 返回异常对象中存储的错误消息（C 风格字符串）
+- 用 `std::string(e.what())` 转成 `std::string` 后，用 `.find()` 搜索错误类型关键词
+- 这样底层（LGraph）只需要抛出一个详细异常，上层（CommandProcessor）统一解析并输出标准格式的错误信息
+
+#### 2. `std::string::find()`——字符串子串查找
+
+```cpp
+if (what.find("place_not_found") != std::string::npos) {
+    // 找到了 "place_not_found" 子串
+}
+```
+
+- `find(sub)` 在字符串中查找子串 `sub`
+- 找到 → 返回首次出现的位置（0, 1, 2, ...）
+- 没找到 → 返回 `std::string::npos`（一个特殊常量，值约 18 亿亿）
+- 与前面 CsvIO 中学的 `npos` 是同一个常量
+
+#### 3. 排序放在 cmd 函数里而非被调用函数里
+
+```cpp
+// QUERY_CATEGORY 里
+std::vector<std::string> ids = graph.GetPlacesByCategory(category);
+std::sort(ids.begin(), ids.end());  // 排序放在这里处理
+```
+
+- 不把排序硬编码在 `GetPlacesByCategory()` 里面，因为有些调用场景可能不需要排序
+- 只在 cmd 函数里（命令行输出要求）才排序，其他场景（如算法内部使用）免去 O(V log V) 的开销
+- 这是"关注点分离"的体现：数据提供者只负责提供数据，格式要求由使用者处理
+
+#### 4. `istringstream >>` 的返回值可以用来判断读取是否成功
+
+```cpp
+if (!(args >> places_path >> roads_path)) {
+    std::cout << "ERROR invalid_arguments" << std::endl;
+    return;
+}
+```
+
+- `istringstream::operator>>` 返回对流的引用
+- 当读取失败（参数不够/类型不匹配）时，流进入 fail 状态，`!stream` 返回 true
+- 所以 `if (!(iss >> x))` 的意思是"如果读取 x 失败了"
