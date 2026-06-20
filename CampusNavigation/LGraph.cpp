@@ -16,6 +16,14 @@ namespace Graph {
 
     // ==================== 基础信息 ====================
 
+    // 清空图中所有的顶点和边，恢复到刚构造时的空图状态
+    // 我觉的写一个Clear()很重要，Algorithm里面的函数可直接调用而不需要自己写一次，减少复杂度，而且清晰明了。
+    //直接调用两个 unordered_map 的 clear() 即可，O(V+E)
+    void LGraph::Clear() {
+        vertices_.clear();
+        adj_.clear();
+    }
+
     // 返回当前图中存在的顶点数
     int LGraph::VertexCount() const {
         return static_cast<int>(vertices_.size());      /*C++ 的显式类型转换。
@@ -243,7 +251,7 @@ namespace Graph {
 
     // 返回边的完整信息
     EdgeNode LGraph::GetEdge(const std::string &from_id, const std::string &to_id) const {
-        /*这里最好不要复用exist_edge(from_id, to_id)，因为这样得不到from_id，to_id，相当于复用的函数查找一次，本函数又查找一次，时间翻倍*/
+        /*这里最好不要复用exist_edge(from_id, to_id)，因为这样得不到Edge的信息，相当于复用的函数查找一次，本函数又查找一次，时间翻倍*/
         auto from_it = adj_.find(from_id);
         if (from_it == adj_.end()) {
             throw GraphException("road_not_found: " + from_id + " -> " + to_id);
@@ -333,6 +341,7 @@ namespace Graph {
     // 返回某类别下所有地点 id
     // 遍历所有顶点，筛选 category 匹配的
     std::vector<std::string> LGraph::GetPlacesByCategory(const std::string &category) const {
+        //我觉的这个函数是不需要抛出参数category写错的错误的，因为写错了大不了没有
         std::vector<std::string> result;
         for (const auto &kv : vertices_) {
             if (kv.second.category == category) {

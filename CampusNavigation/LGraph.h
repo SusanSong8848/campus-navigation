@@ -81,6 +81,7 @@ namespace Graph {
                                                         对于单参数构造函数，推荐加上 explicit 以避免意外*/
 
         // ==================== 基础信息 ====================
+        void Clear();  // 清空图中所有顶点和边
         int VertexCount() const;
         int EdgesCount() const;
         bool exist_vertex(const std::string &place_id) const;
