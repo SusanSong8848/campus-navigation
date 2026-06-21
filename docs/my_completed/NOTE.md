@@ -378,6 +378,54 @@ auto isOpen = [&](const std::string &place_id) {
 
 ---
 
+### (三) [Algorithm.cpp里面 拓展1](CampusNavigation/Algorithm.cpp)
+
+#### 9. `std::string::rfind()`——反向查找（从末尾向前找）
+
+```cpp
+size_t sep = cur_key.rfind('|');  // 从后往前找最后一个 '|' 的位置
+```
+
+- `find(ch)`：从前往后找字符，返回**首次**出现的位置
+- `rfind(ch)`：从后往前找字符，返回**最后一次**出现的位置（**r**everse **find**）
+- 在 `GetShortestPathK` 中用 `rfind('|')` 解析 `"place_id|used"` 编码的状态字符串——因为 `place_id` 中不含 `|`，所以从结尾往前找最可靠
+- 如果整个字符串没有找到字符，同样返回 `std::string::npos`
+
+#### 10. 整数向上取整除法技巧：`ceil(x / n) = (x + n - 1) / n`
+
+```cpp
+int bike_time = (edge.walk_time + 2) / 3;  // ceil(x/3) = (x+2)/3
+```
+
+- **问题**：C++ 中整数除法 `/` 是**向下取整**（如 `5/3 = 1`，不是 `2`）
+- **技巧**：`ceil(x / n)` 在整数运算中等价于 `(x + n - 1) / n`
+- **推导**：加上 `n-1` 后，只有当 `x` 不是 `n` 的整数倍时才进位
+  - `5/3`：`(5+2)/3 = 7/3 = 2` ✅
+  - `6/3`：`(6+2)/3 = 8/3 = 2` ✅（刚好整除不受影响）
+- 本项目用处：`ceil(walk_time / 3)` = `(walk_time + 2) / 3`，计算骑行加速后的时间
+
+#### 11. 二维 Dijkstra 的理解（拓展 1 算法精髓）
+
+> 这是我学习完ai的算法后最核心的总结。核心思路是把"用了几张券"和"走到了哪个节点"绑在一起当成一个状态，而不是真的去建 K 层图。
+
+```
+//   我来总结一下，思路是每次Dijkstra新增临边的时候都分两种情况（如果还有券的话）：新边不骑车和新边骑车，
+//可到达新节点耗时少就push到unordered_map pq<int(最新时间), string(状态编码place_id + 用券更新总数used)>里所有情况一起排序，以便下次拿出来的是总是耗时最少，
+//循环直到达到终点（首次肯定也是时间最短）就退出循环，找到最短时间best_time，用券数target_key，
+//最后再进行回溯找到路径节点(需要reverse)和用券节点(需要按字典序)（因为这个pre是存的unordered_map<string(节点id)，PrevInfo(pre节点的id, 用券数, 是否用券)>）
+```
+
+- 常规 Dijkstra 状态只有 `(place_id)`，这里扩展为 `(place_id, 已用券数)`
+- 用字符串 `"place_id|used"` 做状态编码键，放进 `unordered_map` 统一管理
+- 遍历每条邻边时**分两条路**同时压入优先队列：
+  - 不骑车（不用券）：`cost = walk_time`，券数不变
+  - 骑车（用券）：`cost = ceil(walk_time / 3)`，券数 +1（需未用完）
+- 所有可能性一起在优先队列（小顶堆）里竞争，每次取总时间最小的出来继续展开
+- 第一次在堆顶弹出的到达终点的状态就是全局最短时间——和普通 Dijkstra 一样，贪心正确性由"所有边权非负"保证
+- 最后从终态沿 `prev` 链回溯：path 记录走了哪些节点（需 reverse），fast_edges 记录哪些边上用了券（需排序）
+
+---
+
 ## 四、CommandProcessor
 
 ### （一）[CommandProcessor.h里面](CampusNavigation/CommandProcessor.h)
