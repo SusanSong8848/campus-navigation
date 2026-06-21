@@ -38,6 +38,8 @@ namespace Graph {
         void cmdMustPass(std::istringstream &args);
         void cmdMst();
         void cmdCritical();
+        //拓展：
+        void cmdShortestK(std::istringstream &args);
 
     public:
         explicit CommandProcessor(LGraph &graph) : graph(graph) {}

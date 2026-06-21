@@ -484,5 +484,176 @@ namespace Graph {
             return result;
         }
 
+        // ================================================================
+        // 拓展 1：共享单车 — 二维 Dijkstra（分层图思想）
+        // ────────────────────────────────────────────
+        //   每张券让一条边的耗时从 walk_time 缩短为 ceil(walk_time / 3)
+        //   最多用 K 张券（0 ≤ K ≤ 10），不必用满
+        //   只考虑 status == "open" 的边
+        //
+        //   算法思路（在报告中展开说明）：
+        //     不显式构建 K+1 层图，而是用二维状态 (place_id, 已用券数)
+        //     跑 Dijkstra，每条边有两个转移选项：
+        //       a. 步行：cost = walk_time，券数不变
+        //       b. 骑行：cost = ceil(walk_time / 3)，券数 +1（需券数 < K）
+        //   时间复杂度 O(K·(V+E) log(K·V))，K ≤ 10 时等同于 O((V+E) log V)
+        //
+        //   我来总结一下，思路是每次Dijkstra新增临边的时候都分两种情况（如果还有券的话）：新边不骑车和新边骑车，
+        //可到达新节点耗时少就push到unordered_map pq<int(最新时间), string(状态编码place_id + 用券更新总数used)>里所有情况一起排序，以便下次拿出来的是总是耗时最少，
+        //循环直到达到终点（首次肯定也是时间最短）就退出循环，找到最短时间best_time，用券数target_key，
+        //最后再进行回溯找到路径节点(需要reverse)和用券节点(需要按字典序)（因为这个pre是存的unordered_map<string(节点id)，PrevInfo(pre节点的id, 用券数, 是否用券)>）
+        // ================================================================
+        ShortestKResult GetShortestPathK(const LGraph &graph,
+                                         const std::string &from_id,
+                                         const std::string &to_id,
+                                         int K) {
+            ShortestKResult result;
+
+            if (!graph.exist_vertex(from_id) || !graph.exist_vertex(to_id)) {       //首先处理
+                return result;
+            }
+
+            // 状态编码：place_id + "|" + used → 最短时间
+            // 用 string 键编码二维状态，避免嵌套复杂结构
+            auto encode = [](const std::string &id, int used) {         //std::string encode(const std::string &id, int used)
+                return id + "|" + std::to_string(used);
+            };
+
+            // dist[encoded_state] = 最短时间
+            std::unordered_map<std::string, int> dist;
+            // prev_state[encoded_state] = {前驱地点, 前驱券数, 是否在这条边上用券}
+            struct PrevInfo {
+                std::string prev_id;
+                int prev_used;
+                bool used_coupon;  // 从前驱到当前这条边是否用了券
+            };
+            std::unordered_map<std::string, PrevInfo> prev;
+
+            // 小顶堆：pair<当前时间, 状态编码>
+            using P = std::pair<int, std::string>;
+            std::priority_queue<P, std::vector<P>, std::greater<P>> pq;
+
+            std::vector<std::string> all_ids = graph.AllPlaceIds();
+
+            // 初始化所有状态的时间为 INT_MAX
+            for (const auto &id : all_ids) {                //同节点，不同编码不是一个元素
+                for (int u = 0; u <= K; ++u) {
+                    dist[encode(id, u)] = INT_MAX;
+                }
+            }
+
+            // 起点：券数 0，时间 0
+            std::string start_key = encode(from_id, 0);
+            dist[start_key] = 0;
+            pq.push({0, start_key});
+
+            // Dijkstra 主循环
+            std::string target_key;  //到达终点的最佳状态 key（券数最小的最短路径）
+            int best_time = INT_MAX;
+
+            while (!pq.empty()) {
+                auto [cur_time, cur_key] = pq.top();
+                pq.pop();
+
+                // 解析当前状态
+                // cur_key 格式: "place_id|used"
+                size_t sep = cur_key.rfind('|');        //return : Index of last occurrence.
+                std::string cur_id = cur_key.substr(0, sep);
+                int cur_used = std::stoi(cur_key.substr(sep + 1));      //string to int
+
+                // 如果当前时间大于已记录的最短时间，跳过（惰性删除）
+                if (cur_time > dist[cur_key]) continue;             //已经失效落后了
+
+                // 到达终点：记录最佳状态
+                if (cur_id == to_id) {
+                    if (cur_time < best_time) {         /*有点多余，因为Dijkstra第一次到达终点肯定也是全局时间最短
+                                                        这里还这样写其实是保留一个"还可以按用券数最少作第二优先级"的情况*/
+                        best_time = cur_time;
+                        target_key = cur_key;
+                    }
+                    // 因为时间非负且 Dijkstra 弹出顺序递增，第一个到达的就是最短
+                    // 但不同券数对应不同状态，可能后面弹出更少券数的。不过时间优先，
+                    // 当前已是最短时间（堆保证了），继续循环也没更优了
+                    break;
+                }
+
+                // 遍历邻接边
+                std::vector<EdgeNode> adj_edges = graph.GetAdjacentEdges(cur_id);
+                for (const auto &edge : adj_edges) {
+                    if (edge.status != "open") continue;
+                    const std::string &neighbor = edge.to_id;
+
+                    // 选项 a：步行（不用券）
+                    {
+                        int new_time = cur_time + edge.walk_time;
+                        std::string new_key = encode(neighbor, cur_used);
+                        if (new_time < dist[new_key]) {
+                            dist[new_key] = new_time;
+                            prev[new_key] = {cur_id, cur_used, false};
+                            pq.push({new_time, new_key});
+                        }
+                    }
+
+                    // 选项 b：骑行（用券），加速后时间 = ceil(walk_time / 3)
+                    if (cur_used < K) {     //这里必须是券还没用完新增边才能处理这种情况
+                        int bike_time = (edge.walk_time + 2) / 3;  // ceil(x/3) = (x+2)/3       /*因为要求输入输出都是整数，所以这里向上取整*/
+                        int new_time = cur_time + bike_time;
+                        std::string new_key = encode(neighbor, cur_used + 1);
+                        if (new_time < dist[new_key]) {
+                            dist[new_key] = new_time;
+                            prev[new_key] = {cur_id, cur_used, true};
+                            pq.push({new_time, new_key});
+                        }
+                    }
+                }
+            }
+
+            // 检查是否可达
+            if (best_time == INT_MAX) {
+                return result;  // reachable = false
+            }
+
+            result.total_time = best_time;
+            result.reachable = true;
+
+            // 从 target_key 提取最终状态的券数
+            size_t final_sep = target_key.rfind('|');
+            result.k_used = std::stoi(target_key.substr(final_sep + 1));
+
+            // 回溯路径 + 用券边
+            std::string cur_key = target_key;
+            while (true) {
+                size_t sep = cur_key.rfind('|');
+                std::string cur_id = cur_key.substr(0, sep);
+                int cur_used = std::stoi(cur_key.substr(sep + 1));
+
+                result.path.push_back(cur_id);
+
+                if (cur_id == from_id && cur_used == 0) break;
+
+                auto it = prev.find(cur_key);
+                if (it == prev.end()) break;  // 不应该发生
+
+                // 如果当前边用了券，记录它
+                if (it->second.used_coupon) {
+                    std::string u = it->second.prev_id;
+                    std::string v = cur_id;
+                    if (u > v) std::swap(u, v);
+                    result.fast_edges.push_back({u, v});
+                }
+
+                // 回溯到前驱状态
+                cur_key = encode(it->second.prev_id, it->second.prev_used);
+            }
+
+            // 反转路径（目前是 to → from 顺序）
+            std::reverse(result.path.begin(), result.path.end());
+
+            // 对用券边列表按 (min, max) 字典序排序
+            std::sort(result.fast_edges.begin(), result.fast_edges.end());
+
+            return result;
+        }
+
     } //namespace Algorithm
 } //namespace Graph

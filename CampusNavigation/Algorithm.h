@@ -130,6 +130,28 @@ namespace Graph {
         // E. 关键节点与关键边分析（暴力枚举法，逐个"屏蔽"后重算连通分量）
         //    复杂度 O(V·(V+E) + E·(V+E))
         CriticalResult FindCriticalNodesAndEdges(const LGraph &graph);
+
+        // ==================== 拓展任务 1：共享单车（分层图最短路径） ====================
+        // 结果结构体
+        struct ShortestKResult {
+            int total_time;                                    // 总时间
+            int k_used;                                        // 实际用券数
+            std::vector<std::string> path;                     // 路径序列
+            std::vector<std::pair<std::string, std::string>> fast_edges; // 用券边列表
+            bool reachable;
+
+            ShortestKResult() : total_time(0), k_used(0), reachable(false) {}
+        };
+
+        // 拓展 1：共享单车（K 张加速通行券）
+        //   每张券让一条边的耗时从 walk_time 缩短为 ceil(walk_time / 3)
+        //   求从 from 到 to 的最短总时间，最多用 K 张券
+        //   实现：二维 Dijkstra，状态为 (place_id, 已用券数)
+        //   时间复杂度 O(K·(V+E) log(K·V))
+        ShortestKResult GetShortestPathK(const LGraph &graph,
+                                         const std::string &from_id,
+                                         const std::string &to_id,
+                                         int K);
     }
 }
 #endif //CAMPUSNAVIGATION_ALGORITHM_H

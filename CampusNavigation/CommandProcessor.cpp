@@ -63,6 +63,8 @@ namespace Graph {
             cmdMst();
         } else if (cmd == "CRITICAL") {
             cmdCritical();
+        } else if (cmd == "SHORTEST_K") {       //拓展一
+            cmdShortestK(iss);
         } else {
             std::cout << "ERROR unknown_command" << std::endl;
         }
@@ -563,6 +565,36 @@ namespace Graph {
 
         std::cout << " EDGES " << edges_sorted.size();
         for (const auto &p : edges_sorted) std::cout << " " << p.first << "-" << p.second;
+        std::cout << std::endl;
+    }
+
+    // ==================== SHORTEST_K（拓展 1：共享单车） ====================
+    // 在拥有 K 张加速通行券的情况下，求 from 到 to 最短总时间
+    // 每张券可将一条边的耗时从 walk_time 缩短为 ceil(walk_time / 3)
+    // 输出格式：PATH <total_time> K_USED <k_used> NODES <id1> ... FAST <count> [<u1>-<v1> ...]
+    void CommandProcessor::cmdShortestK(std::istringstream &args) {
+        std::string from_id, to_id;
+        int K = 0;
+        if (!(args >> from_id >> to_id >> K)) {
+            std::cout << "ERROR invalid_arguments" << std::endl;
+            return;
+        }
+        if (!graph.exist_vertex(from_id) || !graph.exist_vertex(to_id)) {
+            std::cout << "ERROR place_not_found" << std::endl;
+            return;
+        }
+
+        Algorithm::ShortestKResult result = Algorithm::GetShortestPathK(graph, from_id, to_id, K);
+        if (!result.reachable) {
+            std::cout << "NO_PATH" << std::endl;
+            return;
+        }
+
+        std::cout << "PATH " << result.total_time << " K_USED " << result.k_used
+                  << " NODES";
+        for (const auto &id : result.path) std::cout << " " << id;
+        std::cout << " FAST " << result.fast_edges.size();
+        for (const auto &e : result.fast_edges) std::cout << " " << e.first << "-" << e.second;
         std::cout << std::endl;
     }
 
