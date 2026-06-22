@@ -14,3 +14,13 @@ Thumbs.db
 # 程序运行时生成的动态数据（如保存的地点/道路）
 saved_places.csv
 saved_roads.csv
+
+# 编译构建目录
+build/
+# 其他编译产物
+*.exe
+*.obj
+*.o
+# CMake 缓存（如果意外在源码目录运行了 cmake）
+CMakeCache.txt
+CMakeFiles/
