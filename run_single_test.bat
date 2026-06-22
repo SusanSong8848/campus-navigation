@@ -1,9 +1,15 @@
 @echo off
-chcp 65001 >nul
+chcp 65001 >nul 2>nul
 setlocal enabledelayedexpansion
 
-set EXE=%~dp0CampusNavigation\campus_nav.exe
-set TEST_DIR=%~dp0测试数据\必做
+REM Navigate to absolute paths using pushd/cd, then capture with %cd%
+pushd "%~dp0CampusNavigation"
+set EXE=%cd%\campus_nav.exe
+popd
+
+pushd "%~dp0测试数据\必做"
+set TEST_DIR=%cd%
+popd
 
 if not "%1"=="" set CASE=%1
 if "%CASE%"=="" (

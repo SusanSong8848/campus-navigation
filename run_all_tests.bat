@@ -1,12 +1,19 @@
 @echo off
+chcp 65001 >nul 2>nul
 setlocal enabledelayedexpansion
 
-REM Use relative path from this script's location
-set EXE=%~dp0CampusNavigation\campus_nav.exe
-set TEST_DIR=%~dp0测试数据\必做
+REM Navigate to absolute paths using pushd/cd, then capture with %cd%
+REM This avoids file-encoding issues with Chinese directory names
+pushd "%~dp0CampusNavigation"
+set EXE=%cd%\campus_nav.exe
+popd
+
+pushd "%~dp0测试数据\必做"
+set TEST_DIR=%cd%
+popd
 
 echo ========================================
-echo   校园导航系统 — 全量集成测试
+echo   CampusNavigation - Full Integration Test
 echo ========================================
 echo.
 
@@ -14,7 +21,6 @@ set PASS=0
 set FAIL=0
 set TOTAL=0
 
-:: ================ small_cases ================
 echo --- Small Cases ---
 for /d %%d in ("%TEST_DIR%\small_cases\*") do (
     set /a TOTAL+=1
@@ -31,7 +37,6 @@ for /d %%d in ("%TEST_DIR%\small_cases\*") do (
     popd
 )
 
-:: ================ sample_ecnu ================
 echo --- Sample ECNU ---
 set /a TOTAL+=1
 pushd "%TEST_DIR%\sample_ecnu"
@@ -46,7 +51,6 @@ if !errorlevel!==0 (
 )
 popd
 
-:: ================ medium_cases ================
 echo --- Medium Cases ---
 for /d %%d in ("%TEST_DIR%\medium_cases\*") do (
     set /a TOTAL+=1
@@ -63,7 +67,6 @@ for /d %%d in ("%TEST_DIR%\medium_cases\*") do (
     popd
 )
 
-:: ================ large_cases ================
 echo --- Large Cases ---
 for /d %%d in ("%TEST_DIR%\large_cases\*") do (
     set /a TOTAL+=1
@@ -82,8 +85,7 @@ for /d %%d in ("%TEST_DIR%\large_cases\*") do (
 
 echo.
 echo ========================================
-echo   测试结果: %PASS% 通过, %FAIL% 失败 (共 %TOTAL% 个)
-echo   FAIL 均为 MST 边选择差异，非代码错误
+echo   Result: %PASS% passed, %FAIL% failed (total %TOTAL%)
 echo ========================================
 pause
 endlocal
