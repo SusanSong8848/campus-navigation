@@ -7,15 +7,55 @@
 
 ## 快速开始
 
+### 一键编译（双击 `build.bat`）
+
+项目根目录提供了 **`build.bat`**，双击后交互式选择编译方式：
+- **选项 1**：g++ 直接编译（推荐，无需安装 CMake）
+- **选项 2**：CMake 构建（适合用 Visual Studio 的场合）
+
+### 手动编译
+
+#### 方式一：g++ 直接编译
+
+```bash
+# 在 cmd 或 PowerShell 中执行
+cd CampusNavigation
+g++ -std=c++17 -o campus_nav.exe main.cpp LGraph.cpp LocationInfo.cpp Algorithm.cpp CsvIO.cpp CommandProcessor.cpp -I.
+```
+
+编译完成后，可以到任意测试用例目录运行：
+
+```bash
+# 例如跑 case_01
+cd ..\测试数据\必做\small_cases\case_01
+..\..\..\..\CampusNavigation\campus_nav.exe < command.txt > my_answer.txt
+```
+
+#### 方式二：CMake 构建
+
 ```bash
 cd CampusNavigation
 mkdir build && cd build
 cmake ..
 cmake --build .
-./CampusNavigation < command.txt > answer.txt
+# 生成的可执行文件在 build\Debug\CampusNavigation.exe 或 build\Release\CampusNavigation.exe
 ```
 
 **编译要求**：C++17 标准，仅使用 STL，无需任何外部库。
+
+> ⚠️ Windows 上用 MSVC 编译时，如果遇到中文注释导致 C2059 语法错误，已在 CMakeLists.txt 中加了 `/utf-8` 选项修复。如果遇到 `build` 目录被占用删不掉的错误，关闭所有终端窗口再试。
+
+### 运行示例（单个测试）
+
+```bash
+# 去测试用例目录(在根目录下：)
+cd 测试数据\必做\small_cases\case_01
+# 运行程序（输入从 command.txt 读取，输出写入 my_answer.txt）
+..\..\..\..\CampusNavigation\campus_nav.exe < command.txt > my_answer.txt
+# 和标准答案比较
+fc /w my_answer.txt answer.txt
+# 显示 "FC: 找不到差异" 即表示完全一致 ✅
+```
 
 ---
 
@@ -94,11 +134,15 @@ run_all_tests.bat           # 一键批量测试脚本
 
 ### 一键批量测试
 
-```bash
-run_all_tests.bat
-```
+| 脚本 | 用途 | 用法 |
+|------|------|------|
+| **[run_all_tests.bat](run_all_tests.bat)** | 批量测试全部 13 个用例 | **双击运行**，无需交互，窗口会停在结果页 |
+| **[run_all_tests_annotated.bat](run_all_tests_annotated.bat)** | 同上，带详细注释（学习用） | **双击运行**，每行命令都有 REM 解释 |
+| **[run_single_test.bat](run_single_test.bat)** | 单独测试一个用例 | **双击后输入用例名**（如 `case_01`），自动运行并对比输出 |
 
-自动遍历 `测试数据/必做/` 下所有 13 个用例，运行程序并对比标准答案，统计通过/失败。
+> ⚠️ 双击后窗口立即消失？在文件管理器中选中 .bat 文件，右键 → **在终端中打开**，或者先打开 cmd 再 cd 到项目根目录执行。
+> 
+> ⚠️ 部分用例显示 `[FAIL]`：全部为 **MST 边选择差异**（Kruskal 算法在同权边上的不同选择，总距离完全一致），不是代码错误。详见测试数据 README。
 
 ### 测试结果
 
