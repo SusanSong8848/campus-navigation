@@ -23,13 +23,26 @@ if "%CASE%"=="" (
 )
 if "%CASE%"=="" (echo No case name. Exiting. & pause & exit /b)
 
-set CASE_DIR=
-for /d %%d in ("%TEST_DIR%\small_cases\%CASE%") do set CASE_DIR=%%d
-if not defined CASE_DIR for /d %%d in ("%TEST_DIR%\medium_cases\%CASE%") do set CASE_DIR=%%d
-if not defined CASE_DIR for /d %%d in ("%TEST_DIR%\large_cases\%CASE%") do set CASE_DIR=%%d
-if "%CASE%"=="sample_ecnu" set CASE_DIR=%TEST_DIR%\sample_ecnu
+REM Use if exist to find the case directory (avoids for /d encoding issues)
+set FOUND=0
+if exist "%TEST_DIR%\small_cases\%CASE%\" (
+    set "CASE_DIR=%TEST_DIR%\small_cases\%CASE%"
+    set FOUND=1
+)
+if !FOUND!==0 if exist "%TEST_DIR%\medium_cases\%CASE%\" (
+    set "CASE_DIR=%TEST_DIR%\medium_cases\%CASE%"
+    set FOUND=1
+)
+if !FOUND!==0 if exist "%TEST_DIR%\large_cases\%CASE%\" (
+    set "CASE_DIR=%TEST_DIR%\large_cases\%CASE%"
+    set FOUND=1
+)
+if "%CASE%"=="sample_ecnu" (
+    set "CASE_DIR=%TEST_DIR%\sample_ecnu"
+    set FOUND=1
+)
 
-if not defined CASE_DIR (
+if !FOUND!==0 (
     echo [ERROR] Case "%CASE%" not found. Check spelling.
     pause & exit /b
 )
@@ -57,3 +70,4 @@ echo ===================================================
 popd
 echo.
 pause
+endlocal

@@ -2,15 +2,12 @@
 chcp 65001 >nul 2>nul
 setlocal enabledelayedexpansion
 
-REM Navigate to absolute paths using pushd/cd, then capture with %cd%
-REM This avoids file-encoding issues with Chinese directory names
-pushd "%~dp0CampusNavigation"
-set EXE=%cd%\campus_nav.exe
-popd
+REM Move to the script's directory first, then use relative paths throughout.
+REM This avoids encoding issues between %~dp0 (ANSI) and UTF-8 Chinese chars.
+cd /d "%~dp0"
 
-pushd "%~dp0测试数据\必做"
-set TEST_DIR=%cd%
-popd
+set EXE=%cd%\CampusNavigation\campus_nav.exe
+set TEST_DIR=%cd%\测试数据\必做
 
 echo ========================================
 echo   CampusNavigation - Full Integration Test
