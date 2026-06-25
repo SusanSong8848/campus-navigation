@@ -796,3 +796,99 @@ add_executable(CampusNavigation            # 生成 CampusNavigation.exe
 | `run_all_tests.bat` | **测程序**：用已生成的 `campus_nav.exe` 批量运行测试用例 | 测试 / 验证 |
 
 - 二者分工明确：先有 `CMakeLists.txt` 生成可执行文件，再由 `.bat` 脚本驱动测试流程。
+
+---
+
+## 七、Shell 编码与批处理调试（在 .bat 开发中踩过的坑）
+
+#### 1. cmd.exe 对 .bat 文件的编码假设
+
+- cmd 在打开 `.bat` 文件时，用**系统默认代码页（GBK/936）**解析文件内容
+- 如果 VS Code 把 `.bat` 存成了 **UTF-8**，所有中文字符会被 GBK 误解析成乱码
+- 所以 `set TEST_DIR=测试数据\必做` 存到变量里的就是乱码路径，后续 `pushd` 必然失败
+
+不管怎么加 `chcp 65001` 都没用——因为文件已经被 cmd 按 GBK 解析完了。
+
+#### 2. `chcp 65001` 能做什么、不能做什么
+
+| 能做 | 不能做 |
+|------|--------|
+| 改变终端**显示**编码（让 echo 输出正常显示中文） | 改变 `.bat` 文件**被解析**时的编码 |
+| 让 `type` 命令正确渲染 UTF-8 文件 | 修复已经赋值的乱码变量 |
+
+#### 3. 三种解决方案
+
+| 方案 | 做法 | 优缺点 |
+|------|------|--------|
+| 另存为 ANSI | 用记事本打开 `.bat` → 另存为 → 编码选 ANSI | 治本，但 VS Code 每次保存会提示编码不匹配 |
+| `cd` 动态捕获 | `pushd %~dp0测试数据\必做` → `set TEST_DIR=%cd%` | 中文在 `pushd` 的命令行参数中，由 OS 解析而非 cmd 变量展开 |
+| 零中文纯 ASCII | 所有路径都用英文、用 `for /d` 自动发现目录 | 最可靠，不依赖任何编码假设 |
+
+本项目最终采用了**零中文纯 ASCII 绝对路径**方案。
+
+#### 4. 双击 .bat 闪退的调试方法
+
+| 方法 | 操作 |
+|------|------|
+| 加 `pause` | 脚本末尾加一行 `pause`，窗口会停在"请按任意键继续" |
+| 右键 → 在终端中打开 | 比双击更可靠，窗口不会闪退 |
+| 去掉 `@echo off` | 临时注释掉第一行，看每条命令的执行结果 |
+| 去掉 `2>nul` | 让错误信息显示出来，帮助定位问题 |
+
+---
+
+## 八、HTML Canvas 图形化界面（拓展 3）
+
+#### 1. 为什么选 HTML Canvas？
+
+| 选项 | 优点 | 缺点 |
+|------|------|------|
+| Qt | 功能完整 | 需安装 Qt 库，编译复杂 |
+| Dear ImGui | 轻量 | 仍需 C++ 编译，跨平台配置麻烦 |
+| **HTML Canvas** | 零依赖，双击即开，跨平台 | 性能不如原生，不能直接调用 C++ 代码 |
+
+对于数据结构的课程项目，HTML Canvas 是最低门槛、最高展示效果的方案。
+
+#### 2. HiDPI（Retina）高清渲染
+
+**问题**：默认 Canvas 的 `width/height` 是 CSS 像素，在 2x/3x 屏幕上出现模糊。
+
+**解决**：
+```javascript
+const dpr = window.devicePixelRatio || 1;
+canvas.width = container.clientWidth * dpr;   // 物理像素宽度
+canvas.height = container.clientHeight * dpr;
+canvas.style.width = container.clientWidth + 'px';
+canvas.style.height = container.clientHeight + 'px';
+ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+```
+
+#### 3. 力导向布局（Force-Directed Layout）
+
+模拟物理弹簧系统让节点位置自然分布：
+- **节点间斥力**：任意两个节点互相推开，力与距离平方成反比
+- **边弹力**：边的两端互相拉近，力与当前距离与理想距离的差值成正比
+- **迭代阻尼**：每轮只施加 12% 的力，30 轮后达到平衡
+
+```javascript
+// 斥力
+fx[a] += dx * 1500 / (dx*dx + dy*dy);
+// 弹力
+const force = (currentDist - 70) * 0.05;
+// 阻尼
+pos[id].x += fx[id] * 0.12;
+```
+
+#### 4. 点击检测——点到线段的最短距离
+
+```javascript
+function distToSegment(mx, my, x1, y1, x2, y2) {
+  const dx = x2 - x1, dy = y2 - y1, len2 = dx*dx + dy*dy;
+  let t = ((mx-x1)*dx + (my-y1)*dy) / len2;
+  t = Math.max(0, Math.min(1, t));
+  const px = x1 + t*dx, py = y1 + t*dy;
+  return Math.sqrt((mx-px)**2 + (my-py)**2);
+}
+```
+- `t` 是投影参数：0=起点，1=终点，0~1=线段内
+- `Math.max(0, Math.min(1, t))` 确保投影点不超出线段端点
