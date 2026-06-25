@@ -19,6 +19,9 @@ saved_roads.csv
 CampusNavigation/command.txt
 
 # ===== 可被测试数据覆盖的示例数据 =====
+CampusNavigation/my_output.txt
+saved_places.csv
+saved_roads.csv
 CampusNavigation/places.csv
 CampusNavigation/roads.csv
 

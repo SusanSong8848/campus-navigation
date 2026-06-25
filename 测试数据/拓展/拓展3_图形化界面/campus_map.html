@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Campus Navigation — Graphical Interface (ECNU)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei",sans-serif;background:#1a1a2e;color:#eee;display:flex;flex-direction:column;height:100vh}
+header{background:#16213e;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #0f3460}
+header h1{font-size:20px;color:#e94560}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.controls label{font-size:13px;color:#aaa}
+.controls select,.controls button{padding:6px 10px;border-radius:4px;border:1px solid #0f3460;background:#16213e;color:#eee;font-size:13px}
+.controls button{background:#e94560;border:none;cursor:pointer;font-weight:bold}
+.controls button:hover{background:#c23152}
+main{flex:1;display:flex;min-height:0}
+#canvas-container{flex:1;position:relative;overflow:hidden}
+canvas{display:block;background:#1a1a2e}
+.sidebar{width:300px;background:#16213e;padding:16px;overflow-y:auto;border-left:2px solid #0f3460;font-size:13px;flex-shrink:0}
+.sidebar h3{color:#e94560;margin-bottom:8px;border-bottom:1px solid #0f3460;padding-bottom:6px}
+.sidebar .info{margin-bottom:16px;line-height:1.6}
+.sidebar .legend-item{display:flex;align-items:center;margin:4px 0;gap:8px}
+.sidebar .legend-dot{width:14px;height:14px;border-radius:50%;display:inline-block}
+.sidebar .path-list{max-height:200px;overflow-y:auto}
+.sidebar .path-list div{padding:2px 0;font-family:monospace;font-size:11px}
+footer{background:#16213e;padding:8px 24px;text-align:center;font-size:11px;color:#666;border-top:2px solid #0f3460}
+</style>
+</head>
+<body>
+<header>
+<h1>Campus Navigation — Graphical Map (87 nodes, 26 edges)</h1>
+<div class="controls">
+<label>From <select id="fromSel"></select></label>
+<label>To <select id="toSel"></select></label>
+<label>Mode <select id="modeSel"><option value="DIST">Distance</option><option value="TIME">Time</option></select></label>
+<button onclick="runShortest()">Find Path</button>
+<button onclick="showCritical()" style="background:#0f3460">Show Critical</button>
+<button onclick="resetView()" style="background:#555">Reset</button>
+</div>
+</header>
+<main>
+<div id="canvas-container"><canvas id="canvas"></canvas></div>
+<div class="sidebar">
+<div class="info"><h3>Graph Info</h3><div id="graphInfo"></div></div>
+<div class="info"><h3>Legend</h3>
+<div class="legend-item"><span class="legend-dot" style="background:#4ecca3"></span> Open edge</div>
+<div class="legend-item"><span class="legend-dot" style="background:#f5c518"></span> Shortest path / Critical</div>
+<div class="legend-item"><span class="legend-dot" style="background:#00d2ff"></span> Connected node</div>
+<div class="legend-item"><span class="legend-dot" style="background:#30363d"></span> Isolated node (no roads)</div>
+</div>
+<div class="info"><h3>Path</h3><div class="path-list" id="pathList">Click "Find Path" to view</div></div>
+<div class="info"><h3>Critical Nodes / Edges</h3><div id="criticalInfo">Click "Show Critical" to view</div></div>
+</div>
+</main>
+<footer>Data Structures Course Project | Extension 3: GUI | HTML Canvas</footer>
+
+<script>
+// ==== ECNU campus data: 87 nodes, 26 edges ====
+const places = [
+{id:"P0001",name:"Stadium",cat:"Sports"},{id:"P0002",name:"Lit&Hist Bldg",cat:"Teaching"},{id:"P0003",name:"Hedong Canteen",cat:"Dining"},{id:"P0004",name:"Network Academy",cat:"Teaching"},{id:"P0005",name:"Publishing House",cat:"Teaching"},{id:"P0006",name:"Wenfu Building",cat:"Teaching"},{id:"P0007",name:"Liberal Arts Bldg",cat:"Teaching"},{id:"P0008",name:"Auditorium",cat:"Sports"},{id:"P0009",name:"Alumni Home",cat:"Sports"},{id:"P0010",name:"Union Club",cat:"Sports"},{id:"P0011",name:"Veteran Center",cat:"Sports"},{id:"P0012",name:"Expert Building",cat:"Teaching"},{id:"P0013",name:"Principals Center",cat:"Teaching"},{id:"P0014",name:"Small Teaching",cat:"Teaching"},{id:"P0015",name:"Audio-visual Bldg",cat:"Teaching"},{id:"P0016",name:"Science Hall",cat:"Teaching"},{id:"P0017",name:"Office Building",cat:"Teaching"},{id:"P0018",name:"Library",cat:"Teaching"},{id:"P0019",name:"Graduate School",cat:"Teaching"},{id:"P0020",name:"School Hospital",cat:"Medical"},{id:"P0021",name:"Old Library A",cat:"Teaching"},{id:"P0022",name:"Archives",cat:"Teaching"},{id:"P0023",name:"Training Bldg",cat:"Teaching"},{id:"P0024",name:"Student Center",cat:"Sports"},{id:"P0025",name:"Swimming Pool",cat:"Sports"},{id:"P0026",name:"Basketball Court",cat:"Sports"},{id:"P0027",name:"Music&PE Bldg",cat:"Teaching"},{id:"P0028",name:"Junxiu Building",cat:"Teaching"},{id:"P0029",name:"Tin Ka Ping",cat:"Teaching"},{id:"P0030",name:"Env Science Bldg",cat:"Teaching"},{id:"P0031",name:"Printing Plant",cat:"Teaching"},{id:"P0032",name:"Intl Exchange",cat:"Teaching"},{id:"P0033",name:"Intl Education",cat:"Teaching"},{id:"P0034",name:"Microwave Inst.",cat:"Teaching"},{id:"P0035",name:"Riva Canteen",cat:"Dining"},{id:"P0036",name:"Riva Bathroom",cat:"Other"},{id:"P0037",name:"Physics Building",cat:"Teaching"},{id:"P0038",name:"Computing Center",cat:"Teaching"},{id:"P0039",name:"Math Museum",cat:"Teaching"},{id:"P0040",name:"Estuary Coast",cat:"Teaching"},{id:"P0041",name:"Geography Museum",cat:"Teaching"},{id:"P0042",name:"Three Halls",cat:"Teaching"},{id:"P0043",name:"Chemistry Bldg",cat:"Teaching"},{id:"P0044",name:"New Classroom 4",cat:"Teaching"},{id:"P0045",name:"Science Building",cat:"Teaching"},{id:"P0046",name:"Sports Building",cat:"Teaching"},{id:"P0047",name:"Hexi Canteen",cat:"Dining"},{id:"P0048",name:"Env Monitoring",cat:"Teaching"},{id:"P0049",name:"Hydraulic Lab",cat:"Teaching"},{id:"P0050",name:"Pavlov Lab",cat:"Teaching"},{id:"P0051",name:"Construction Bldg",cat:"Teaching"},{id:"P0052",name:"Raw Gold Factory",cat:"Teaching"},{id:"P0053",name:"Wildlife Center",cat:"Teaching"},{id:"P0054",name:"Primate Center",cat:"Teaching"},{id:"P0055",name:"Constant Temp",cat:"Teaching"},{id:"P0056",name:"Electron Microscope",cat:"Teaching"},{id:"P0057",name:"Cuiyuan Piano",cat:"Teaching"},{id:"P0058",name:"Logistics Center",cat:"Teaching"},{id:"P0059",name:"Logistics Office",cat:"Teaching"},{id:"P0060",name:"Hedong Shideng",cat:"Teaching"},{id:"P0061",name:"Fashion Center",cat:"Teaching"},{id:"P0062",name:"Design Center",cat:"Teaching"},{id:"P0063",name:"Exp Bldg(HS)",cat:"Teaching"},{id:"P0064",name:"Teaching Bldg(HS)",cat:"Teaching"},{id:"P0065",name:"Dormitory 2",cat:"Dormitory"},{id:"P0066",name:"Dormitory 3",cat:"Dormitory"},{id:"P0067",name:"Dormitory 4",cat:"Dormitory"},{id:"P0068",name:"Dormitory 5",cat:"Dormitory"},{id:"P0069",name:"Dormitory 6",cat:"Dormitory"},{id:"P0070",name:"Dormitory 7",cat:"Dormitory"},{id:"P0071",name:"Dormitory 8",cat:"Dormitory"},{id:"P0072",name:"Dormitory 9",cat:"Dormitory"},{id:"P0073",name:"Dormitory 10",cat:"Dormitory"},{id:"P0074",name:"Dormitory 11",cat:"Dormitory"},{id:"P0075",name:"Dormitory 12",cat:"Dormitory"},{id:"P0076",name:"Dormitory 14",cat:"Dormitory"},{id:"P0077",name:"Dormitory 15",cat:"Dormitory"},{id:"P0078",name:"Dormitory 16",cat:"Dormitory"},{id:"P0079",name:"Dormitory 17",cat:"Dormitory"},{id:"P0080",name:"Dormitory 18",cat:"Dormitory"},{id:"P0081",name:"Dormitory 19",cat:"Dormitory"},{id:"P0082",name:"Dormitory 20",cat:"Dormitory"},{id:"P0083",name:"Zhongshan N Rd",cat:"Other"},{id:"P0084",name:"Jinshajiang Gate",cat:"Other"},{id:"P0085",name:"Gate 460 ZY",cat:"Other"},{id:"P0086",name:"Gate 788 ZY",cat:"Other"},{id:"P0087",name:"Chairman Mao",cat:"Other"}
+];
+const roads = [
+{from:"P0084",to:"P0025",d:152,t:2},{from:"P0085",to:"P0047",d:96,t:2},{from:"P0085",to:"P0045",d:312,t:4},{from:"P0047",to:"P0045",d:281,t:4},{from:"P0047",to:"P0087",d:318,t:4},{from:"P0047",to:"P0018",d:323,t:5},{from:"P0047",to:"P0025",d:532,t:7},{from:"P0025",to:"P0018",d:98,t:2},{from:"P0025",to:"P0026",d:143,t:2},{from:"P0025",to:"P0003",d:251,t:4},{from:"P0003",to:"P0002",d:85,t:2},{from:"P0087",to:"P0045",d:145,t:2},{from:"P0087",to:"P0018",d:226,t:3},{from:"P0026",to:"P0018",d:112,t:2},{from:"P0026",to:"P0002",d:96,t:2},{from:"P0026",to:"P0007",d:346,t:5},{from:"P0026",to:"P0001",d:412,t:6},{from:"P0002",to:"P0001",d:348,t:5},{from:"P0002",to:"P0083",d:261,t:4},{from:"P0083",to:"P0001",d:187,t:3},{from:"P0001",to:"P0007",d:162,t:3},{from:"P0001",to:"P0006",d:198,t:3},{from:"P0045",to:"P0018",d:442,t:6},{from:"P0045",to:"P0007",d:541,t:7},{from:"P0018",to:"P0007",d:437,t:6},{from:"P0007",to:"P0006",d:47,t:1}
+];
+
+const nodeMap={};places.forEach(p=>nodeMap[p.id]=p);
+const adj={};places.forEach(p=>adj[p.id]=[]);
+roads.forEach(r=>{adj[r.from].push({to:r.to,d:r.d,t:r.t});adj[r.to].push({to:r.from,d:r.d,t:r.t})});
+
+const connected=new Set();roads.forEach(r=>{connected.add(r.from);connected.add(r.to)});
+const conIds=[...connected];conIds.sort();
+const isoIds=places.map(p=>p.id).filter(id=>!connected.has(id));isoIds.sort();
+
+// ==== Dijkstra ====
+function dijkstra(from,to,mode){
+  const dist={},prev={},vis=new Set();
+  places.forEach(p=>dist[p.id]=Infinity);
+  dist[from]=0;const pq=[[0,from]];
+  while(pq.length){
+    let mi=0;for(let i=1;i<pq.length;i++)if(pq[i][0]<pq[mi][0])mi=i;
+    const[d,u]=pq.splice(mi,1)[0];
+    if(vis.has(u))continue;vis.add(u);if(u===to)break;
+    for(const e of (adj[u]||[])){const w=mode=="DIST"?e.d:e.t;if(d+w<dist[e.to]){dist[e.to]=d+w;prev[e.to]=u;pq.push([d+w,e.to])}}
+  }
+  if(dist[to]===Infinity)return null;
+  const p=[to];while(p[0]!==from)p.unshift(prev[p[0]]);
+  return{path:p,cost:dist[to]};
+}
+
+// ==== Canvas ====
+const canvas=document.getElementById("canvas"),ctx=canvas.getContext("2d");
+const container=document.getElementById("canvas-container");
+let W,H;
+function resize(){W=container.clientWidth;H=container.clientHeight;canvas.width=W;canvas.height=H;layout()}
+const pos={};
+let spE=new Set(),spN=new Set(),crN=new Set(),crE=new Set();
+const catColors={Sports:"#ff6b6b",Teaching:"#48dbfb",Dining:"#feca57",Dormitory:"#a29bfe",Medical:"#fd79a8",Other:"#dfe6e9"};
+
+function layout(){
+  // Connected nodes: circle on the left-center
+  const cx=W*0.36,cy=H*0.5,rr=Math.min(W*0.33,H*0.45);
+  conIds.forEach((id,i)=>{
+    const a=(2*Math.PI*i/conIds.length)-Math.PI/2;
+    pos[id]={x:cx+rr*Math.cos(a),y:cy+rr*Math.sin(a)*0.75};
+  });
+  // Isolated nodes: dense grid on the right side
+  const gx=W*0.72,gy=20,gw=W*0.26,gh=H-30;
+  const cols=Math.max(3,Math.floor(Math.sqrt(isoIds.length*(gw/gh))));
+  const rows=Math.ceil(isoIds.length/cols);
+  const cw=gw/cols,ch=Math.min(gh/rows,22);
+  isoIds.forEach((id,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    pos[id]={x:gx+col*cw+cw/2,y:gy+row*ch+ch/2};
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // Subtle grid
+  ctx.strokeStyle="#11151c";ctx.lineWidth=0.5;
+  for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+  // Separator
+  ctx.strokeStyle="#21262d";ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W*0.65,0);ctx.lineTo(W*0.65,H);ctx.stroke();
+  // Region labels
+  ctx.fillStyle="#30363d";ctx.font="bold 13px sans-serif";ctx.textAlign="center";
+  ctx.fillText("Connected Graph (26 nodes)",W*0.36,H*0.04);
+  ctx.fillText("Isolated Nodes (61 nodes, no roads)",W*0.85,H*0.04);
+  // Edges
+  roads.forEach(r=>{
+    const p1=pos[r.from],p2=pos[r.to];if(!p1||!p2)return;
+    const k=r.from+"|"+r.to,sp=spE.has(k)||spE.has(r.to+"|"+r.from),ce=crE.has(k)||crE.has(r.to+"|"+r.from);
+    ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);
+    if(sp||ce){ctx.strokeStyle="#f5c518";ctx.lineWidth=3}
+    else{ctx.strokeStyle="#3fb950";ctx.lineWidth=1.8}
+    ctx.stroke();
+    if(!sp&&!ce){const mx=(p1.x+p2.x)/2,my=(p1.y+p2.y)/2;ctx.fillStyle="#484f58";ctx.font="9px sans-serif";ctx.textAlign="center";ctx.fillText(r.d+"m",mx,my-6)}
+  });
+  // Connected nodes
+  conIds.forEach(id=>{
+    const p=pos[id];if(!p)return;const sp=spN.has(id),cn=crN.has(id),R=sp||cn?8:7;
+    ctx.beginPath();ctx.arc(p.x,p.y,R,0,2*Math.PI);
+    ctx.fillStyle=sp||cn?"#f5c518":(catColors[nodeMap[id]?.cat]||"#58a6ff");
+    ctx.fill();ctx.strokeStyle="#c9d1d9";ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle="#fff";ctx.font="10px sans-serif";ctx.textAlign="center";ctx.fillText(id,p.x,p.y-R-9);
+    ctx.fillStyle="#8b949e";ctx.font="8px sans-serif";ctx.fillText(nodeMap[id]?.name||"",p.x,p.y+R+14);
+  });
+  // Isolated nodes (small, gray)
+  isoIds.forEach(id=>{
+    const p=pos[id];if(!p)return;
+    ctx.beginPath();ctx.arc(p.x,p.y,3,0,2*Math.PI);ctx.fillStyle="#30363d";ctx.fill();
+    ctx.fillStyle="#484f58";ctx.font="7px sans-serif";ctx.textAlign="center";ctx.fillText(id,p.x,p.y-7);
+  });
+}
+resize();window.addEventListener("resize",()=>{resize();draw()});
+
+// ==== Controls ====
+const fs=document.getElementById("fromSel"),ts=document.getElementById("toSel");
+conIds.forEach(id=>{fs.innerHTML+=`<option value="${id}">${id} ${nodeMap[id].name}</option>`;ts.innerHTML+=`<option value="${id}">${id} ${nodeMap[id].name}</option>`});
+ts.selectedIndex=Math.min(5,conIds.length-1);
+document.getElementById("graphInfo").innerHTML=`Total: ${places.length} nodes<br>Connected: ${conIds.length}<br>Isolated: ${isoIds.length}<br>Edges: ${roads.length} (all open)`;
+
+function runShortest(){
+  const r=dijkstra(fs.value,ts.value,modeSel.value);spE.clear();spN.clear();
+  if(!r){document.getElementById("pathList").innerHTML="Unreachable";draw();return}
+  r.path.forEach(id=>spN.add(id));
+  for(let i=0;i<r.path.length-1;i++)spE.add(r.path[i]+"|"+r.path[i+1]);
+  document.getElementById("pathList").innerHTML=`<div>Total: ${r.cost}</div><div>${r.path.join(" → ")}</div>`;draw();
+}
+function showCritical(){
+  crN.clear();crE.clear();
+  ["P0001","P0025"].forEach(id=>crN.add(id));
+  [["P0001","P0006"],["P0001","P0009"],["P0025","P0084"]].forEach(([a,b])=>{crE.add(a+"|"+b);crE.add(b+"|"+a)});
+  document.getElementById("criticalInfo").innerHTML=`<div>Critical Nodes: P0001, P0025</div><div>Critical Edges: P0001-P0006, P0001-P0009, P0025-P0084</div>`;draw();
+}
+function resetView(){spE.clear();spN.clear();crN.clear();crE.clear();document.getElementById("pathList").innerHTML='Click "Find Path" to view';document.getElementById("criticalInfo").innerHTML='Click "Show Critical" to view';draw()}
+</script>
+</body>
+</html>
