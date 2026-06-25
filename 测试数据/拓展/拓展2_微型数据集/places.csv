@@ -1,0 +1,17 @@
+place_id,display_name,category,stay_time,open_time,close_time
+M001,South_Gate,Entrance,0,07:00,23:00
+M002,North_Gate,Entrance,0,07:00,23:00
+M003,East_Gate,Entrance,0,08:00,22:00
+M004,Underground_Parking,Parking,0,06:00,23:59
+M005,Starbucks,Catering,20,07:00,22:00
+M006,Haidilao_Hotpot,Catering,60,10:00,22:00
+M007,Food_Court,Catering,30,08:00,21:30
+M008,UNIQLO,Retail,15,10:00,22:00
+M009,Apple_Store,Retail,10,10:00,22:00
+M010,Cinema,Entertainment,120,09:00,23:30
+M011,Kids_Playground,Entertainment,45,10:00,21:00
+M012,Supermarket,Retail,20,08:00,22:00
+M013,Pharmacy,Service,5,09:00,21:00
+M014,Bank_ATM,Service,3,00:00,23:59
+M015,Restroom_1F,Facility,5,07:00,23:00
+M016,Restroom_2F,Facility,5,07:00,23:00
