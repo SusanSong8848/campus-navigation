@@ -1,0 +1,215 @@
+{
+  "files_in_context": [
+    {
+      "path": "run_all_tests.bat",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1782136245643,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1782136245676,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_all_tests_annotated.bat",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782136395051,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782136405880,
+      "cline_edit_date": 1782136405880,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_all_tests.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782136413092,
+      "cline_edit_date": 1782136413092,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_all_tests.bat",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1782136888426,
+      "cline_edit_date": 1782136413092,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1782136888440,
+      "cline_edit_date": 1782136405880,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782136990302,
+      "cline_edit_date": 1782136990302,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1782137196721,
+      "cline_edit_date": 1782136990302,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782137349561,
+      "cline_edit_date": 1782137349561,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782137436436,
+      "cline_edit_date": 1782137436436,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782137464673,
+      "cline_edit_date": 1782137464673,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_all_tests.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782137596616,
+      "cline_edit_date": 1782137596616,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782137692712,
+      "cline_edit_date": 1782137692712,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1782137753728,
+      "cline_edit_date": 1782137692712,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782137873400,
+      "cline_edit_date": 1782137873400,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782138096463,
+      "cline_edit_date": 1782138096463,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782138152324,
+      "cline_edit_date": 1782138152324,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_all_tests.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782138168177,
+      "cline_edit_date": 1782138168177,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782138556189,
+      "cline_edit_date": 1782138556189,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782138819884,
+      "cline_edit_date": 1782138819884,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782138946116,
+      "cline_edit_date": 1782138946116,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_single_test.bat",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782138995390,
+      "cline_edit_date": 1782138946116,
+      "user_edit_date": null
+    },
+    {
+      "path": "run_all_tests.bat",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782138996330,
+      "cline_edit_date": 1782138168177,
+      "user_edit_date": null
+    }
+  ],
+  "model_usage": [
+    {
+      "ts": 1782136245217,
+      "model_id": "deepseek-v4-pro",
+      "model_provider_id": "deepseek",
+      "mode": "act"
+    }
+  ],
+  "environment_history": [
+    {
+      "ts": 1782136245205,
+      "os_name": "win32",
+      "os_version": "10.0.26200",
+      "os_arch": "x64",
+      "host_name": "Visual Studio Code",
+      "host_version": "1.124.2",
+      "cline_version": "3.89.2"
+    }
+  ]
+}

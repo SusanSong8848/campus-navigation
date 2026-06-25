@@ -1,0 +1,143 @@
+{
+  "files_in_context": [
+    {
+      "path": ".vscode/settings.json",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782302445614,
+      "cline_edit_date": 1782302445614,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/com/susan/campus/PersonFactory.java",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302452024,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/com/susan/campus/Student.java",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302459466,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/com/susan/campus/Teacher.java",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302460339,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/com/susan/campus/TestDynamicBinding.java",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302461194,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/com/susan/campus/Person.java",
+      "record_state": "active",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782302493400,
+      "cline_edit_date": 1782302493400,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/com/susan/campus/Student.java",
+      "record_state": "active",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782302496544,
+      "cline_edit_date": 1782302496544,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/com/susan/campus/Teacher.java",
+      "record_state": "active",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782302498894,
+      "cline_edit_date": 1782302498894,
+      "user_edit_date": null
+    },
+    {
+      "path": ".vscode/settings.json",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302552654,
+      "cline_edit_date": 1782302445614,
+      "user_edit_date": null
+    },
+    {
+      "path": "README.md",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302842063,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/Person.java",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302866718,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "src/main/java/TestDynamicBinding.java",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1782302867555,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "README.md",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1782302908297,
+      "cline_edit_date": 1782302908297,
+      "user_edit_date": null
+    },
+    {
+      "path": "README.md",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1782302908297,
+      "cline_edit_date": 1782302908297,
+      "user_edit_date": 1782303952385
+    },
+    {
+      "path": "README.md",
+      "record_state": "active",
+      "record_source": "user_edited",
+      "cline_read_date": 1782302908297,
+      "cline_edit_date": 1782302908297,
+      "user_edit_date": 1782307361018
+    }
+  ],
+  "model_usage": [
+    {
+      "ts": 1782302356905,
+      "model_id": "deepseek-v4-pro",
+      "model_provider_id": "deepseek",
+      "mode": "act"
+    }
+  ],
+  "environment_history": [
+    {
+      "ts": 1782302356891,
+      "os_name": "win32",
+      "os_version": "10.0.26200",
+      "os_arch": "x64",
+      "host_name": "Visual Studio Code",
+      "host_version": "1.124.2",
+      "cline_version": "3.89.2"
+    }
+  ]
+}

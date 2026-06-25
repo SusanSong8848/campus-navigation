@@ -1,0 +1,255 @@
+{
+  "files_in_context": [
+    {
+      "path": "CampusNavigation/LGraph.cpp",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1781875504235,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1781875514596,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "CampusNavigation/LGraph.cpp",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1781875672860,
+      "cline_edit_date": 1781875672860,
+      "user_edit_date": null
+    },
+    {
+      "path": "CampusNavigation/LGraph.cpp",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1781875697849,
+      "cline_edit_date": 1781875697849,
+      "user_edit_date": null
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781875514596,
+      "cline_edit_date": null,
+      "user_edit_date": 1781875789613
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1781875837935,
+      "cline_edit_date": null,
+      "user_edit_date": 1781875789613
+    },
+    {
+      "path": "CampusNavigation/LGraph.cpp",
+      "record_state": "active",
+      "record_source": "read_tool",
+      "cline_read_date": 1781875863118,
+      "cline_edit_date": 1781875697849,
+      "user_edit_date": null
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1781876097701,
+      "cline_edit_date": null,
+      "user_edit_date": 1781875789613
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781876097701,
+      "cline_edit_date": null,
+      "user_edit_date": 1781876197536
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1781876198420,
+      "cline_edit_date": null,
+      "user_edit_date": 1781876197536
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1781876204469,
+      "cline_edit_date": null,
+      "user_edit_date": 1781876197536
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781876204469,
+      "cline_edit_date": null,
+      "user_edit_date": 1781876294632
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "read_tool",
+      "cline_read_date": 1781876300464,
+      "cline_edit_date": null,
+      "user_edit_date": 1781876294632
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781876300464,
+      "cline_edit_date": null,
+      "user_edit_date": 1781876366061
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1781876368179,
+      "cline_edit_date": 1781876368179,
+      "user_edit_date": 1781876366061
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1781942241786,
+      "cline_edit_date": 1781876368179,
+      "user_edit_date": 1781876366061
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "cline_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781876366061
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781943598761
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781944296091
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781945653527
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781946323921
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781946690604
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781946821186
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781961300038
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781970860982
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "stale",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781970918858
+    },
+    {
+      "path": "CampusNavigation/CommandProcessor.cpp",
+      "record_state": "active",
+      "record_source": "user_edited",
+      "cline_read_date": 1781942309359,
+      "cline_edit_date": 1781942309359,
+      "user_edit_date": 1781970992212
+    },
+    {
+      "path": "测试数据",
+      "record_state": "stale",
+      "record_source": "file_mentioned",
+      "cline_read_date": 1782133430720,
+      "cline_edit_date": null,
+      "user_edit_date": null
+    },
+    {
+      "path": "测试数据",
+      "record_state": "active",
+      "record_source": "user_edited",
+      "cline_read_date": 1782133430720,
+      "cline_edit_date": null,
+      "user_edit_date": 1782134035127
+    }
+  ],
+  "model_usage": [
+    {
+      "ts": 1781875491869,
+      "model_id": "deepseek-v4-pro",
+      "model_provider_id": "deepseek",
+      "mode": "act"
+    }
+  ],
+  "environment_history": [
+    {
+      "ts": 1781875491857,
+      "os_name": "win32",
+      "os_version": "10.0.26200",
+      "os_arch": "x64",
+      "host_name": "Visual Studio Code",
+      "host_version": "1.124.2",
+      "cline_version": "3.89.2"
+    }
+  ]
+}
