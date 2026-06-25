@@ -17,7 +17,7 @@
 | 项目 | 值 |
 |------|-----|
 | 地点数 | 16 |
-| 道路数 | 25（23 open + 2 closed） |
+| 道路数 | 24（23 open + 1 closed） |
 | 类别 | Entrance, Parking, Catering, Retail, Entertainment, Service, Facility |
 
 ## 关键特点与检验目标
@@ -28,23 +28,44 @@
 
 ### 2. 封闭道路的影响
 
-两条 closed 道路：
-- `M004-M001`（地下停车场 → 南门，closed）——模拟停车场维修时南门不可用
-- `M007-M005`（美食广场 → Starbucks，closed）——模拟消防通道临时封闭
-
-如 `DELETE_ROAD` 删除这两条边，或 `CLOSE_ROAD` 关闭它们，应影响连通性。关键验证：`COMPONENTS` 在封闭前后是否正确变化。
+一条 closed 道路：`M007-M005`（美食广场 → Starbucks，closed）——模拟消防通道临时封闭。检验 `COMPONENTS` 在考虑/不考虑 closed 边时的差异。
 
 ### 3. 核心节点与冗余路径
 
-- M010（Cinema）是连接一楼和二楼的关键节点，删除后 KFC 和二楼卫生间将孤立
-- M007-M005 的封闭创造了一个"绕路"场景：从 Food Court 到 Starbucks 需要绕行 Supermarket
+- M010（Cinema）是连接一楼和二楼的关键节点
+- M007-M005 的封闭创造了一个"绕路"场景
 
-### 4. 可测试的命令
+## 文件清单
 
-| 命令 | 示例 |
+| 文件 | 说明 |
 |------|------|
-| SHORTEST | `SHORTEST M001 M010 DIST`（应找到南门→Starbucks→Haidilao→Cinema这样的路径） |
-| TIMED_SHORTEST | `TIMED_SHORTEST M001 M010 09:00 DIST`（Starbucks已开、Haidilao未开） |
-| MUST_PASS | `MUST_PASS M001 M011 DIST 2 M005 M010` |
-| COMPONENTS | 加载后应输出连通分量数（封闭边会影响分量数） |
-| CRITICAL | M010（Cinema）应是关键节点 |
+| `places.csv` | 16 个地点（手写构造） |
+| `roads.csv` | 24 条道路（手写构造） |
+| `command.txt` | 预设测试命令 |
+| `README.md` | 本文档 |
+
+## 如何运行（在 cmd 中）
+
+```bash
+REM 1. 编译（确保 campus_nav.exe 存在）
+cd CampusNavigation
+g++ -std=c++17 -o campus_nav.exe main.cpp LGraph.cpp LocationInfo.cpp Algorithm.cpp CsvIO.cpp CommandProcessor.cpp -I.
+cd ..
+
+REM 2. 进入测试用例目录运行（必须 cd 进入，因为 LOAD 使用相对路径）
+cd 测试数据\拓展\拓展2_微型数据集
+..\..\..\CampusNavigation\campus_nav.exe < command.txt
+```
+
+## 测试命令详解
+
+| 命令 | 预期结果 |
+|------|---------|
+| `LOAD places.csv roads.csv` | OK |
+| `COMPONENTS` | 1 个连通分量（24 条边全部 open 或 M007-M005 closed 不影响连通性） |
+| `SHORTEST M001 M010 DIST` | 找到南门→卫生间→Cinema 路径（150m） |
+| `SHORTEST M001 M010 TIME` | 时间最短路径（3min） |
+| `TIMED_SHORTEST M001 M010 09:00 DIST` | Haidilao 10:00 才开，09:00 不可达→走其他路径 |
+| `TIMED_SHORTEST M001 M010 21:00 DIST` | 大部分店铺已关门→可能 NO_PATH |
+| `MST` | 生成树连通所有节点 |
+| `CRITICAL` | M010 应为关键节点（连接一二楼唯一通道） |
