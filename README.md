@@ -239,3 +239,7 @@ unordered_map<string, unordered_map<string, EdgeNode>> adj_;
 | [拓展 2 微型数据集](测试数据/拓展/拓展2_微型数据集/README.md) | 自制数据（商场）使用说明 |
 | [拓展 2 对抗样例](测试数据/拓展/拓展2_对抗样例/README.md) | 对抗样例使用说明 |
 | [拓展 3 GUI README](测试数据/拓展/拓展3_图形化界面/README.md) | GUI 技术说明（含截图位置） |
+
+## Github:
+
+该项目已同步到 https://github.com/SusanSong8848/campus-navigation.git
