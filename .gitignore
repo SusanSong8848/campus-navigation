@@ -1,4 +1,4 @@
-# 编译产物
+# ===== 编译产物 =====
 *.exe
 *.out
 *.o
@@ -6,21 +6,21 @@
 build/
 Debug/
 Release/
+CMakeCache.txt
+CMakeFiles/
 
-# 系统文件
+# ===== 系统文件 =====
 .DS_Store
 Thumbs.db
 
-# 程序运行时生成的动态数据（如保存的地点/道路）
+# ===== 程序运行时生成的数据 =====
 saved_places.csv
 saved_roads.csv
+CampusNavigation/command.txt
 
-# 编译构建目录
-build/
-# 其他编译产物
-*.exe
-*.obj
-*.o
-# CMake 缓存（如果意外在源码目录运行了 cmake）
-CMakeCache.txt
-CMakeFiles/
+# ===== 可被测试数据覆盖的示例数据 =====
+CampusNavigation/places.csv
+CampusNavigation/roads.csv
+
+# ===== make_my_test.py 生成的数据 =====
+tools/my_test/
