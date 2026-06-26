@@ -2,12 +2,13 @@
 chcp 65001 >nul 2>nul
 setlocal enabledelayedexpansion
 
-REM Move to the script's directory first, then use relative paths throughout.
-REM This avoids encoding issues between %~dp0 (ANSI) and UTF-8 Chinese chars.
-cd /d "%~dp0"
+pushd "%~dp0CampusNavigation"
+set EXE=%cd%\campus_nav.exe
+popd
 
-set EXE=%cd%\CampusNavigation\campus_nav.exe
-set TEST_DIR=%cd%\测试数据\必做
+pushd "%~dp0测试数据\必做"
+set TEST_DIR=%cd%
+popd
 
 echo ========================================
 echo   CampusNavigation - Full Integration Test

@@ -5,13 +5,18 @@
 
 ---
 
-## 快速开始
+## 快速开始（一共提供了三种编译方法和三种运行方法（.bat/g++/CMake））
 
 ### 一键编译（双击 `build.bat`）
 
 项目根目录提供了 **`build.bat`**，双击后交互式选择编译方式：
 - **选项 1**：g++ 直接编译（推荐，无需安装 CMake）
 - **选项 2**：CMake 构建（适合用 Visual Studio 的场合）
+
+__编译完成可以直接一键测试数据：__（若有比对`FAIL`的地方可能答案是存在多种写法）
+项目根目录提供了 **`run_single_test.bat`** 和 **`run_all_tests.bat`**，双击后可运行：
+- **选项 1：`run_single_test.bat`**：测试单个数据，例如输入 `case_01`，生成运行结果以及比对结果
+- **选项 2：`run_all_tests.bat`**：所有测试数据一键全部测试和比对
 
 ### 手动编译
 
@@ -29,6 +34,9 @@ g++ -std=c++17 -o campus_nav.exe main.cpp LGraph.cpp LocationInfo.cpp Algorithm.
 # 例如跑 case_01
 cd ..\测试数据\必做\small_cases\case_01
 ..\..\..\..\CampusNavigation\campus_nav.exe < command.txt > my_answer.txt
+# 和标准答案比较
+fc /w my_answer.txt answer.txt
+# 显示 "FC: 找不到差异" 即表示完全一致 ✅
 ```
 
 #### 方式二：CMake 构建

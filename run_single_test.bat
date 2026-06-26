@@ -2,7 +2,6 @@
 chcp 65001 >nul 2>nul
 setlocal enabledelayedexpansion
 
-REM Navigate to absolute paths using pushd/cd, then capture with %cd%
 pushd "%~dp0CampusNavigation"
 set EXE=%cd%\campus_nav.exe
 popd
@@ -23,7 +22,7 @@ if "%CASE%"=="" (
 )
 if "%CASE%"=="" (echo No case name. Exiting. & pause & exit /b)
 
-REM Use if exist to find the case directory (avoids for /d encoding issues)
+rem use if exist + FOUND flag — no preset of CASE_DIR needed
 set FOUND=0
 if exist "%TEST_DIR%\small_cases\%CASE%\" (
     set "CASE_DIR=%TEST_DIR%\small_cases\%CASE%"
@@ -47,7 +46,7 @@ if !FOUND!==0 (
     pause & exit /b
 )
 
-pushd "%CASE_DIR%"
+pushd "!CASE_DIR!"
 echo.
 echo === Running: %CASE% ===
 "%EXE%" < command.txt > my_answer.txt 2>nul
